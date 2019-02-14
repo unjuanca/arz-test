@@ -1,6 +1,6 @@
 import { WharehouseEntity } from './wharehouse.entity';
 
-interface WharehouseData {
+export interface WharehouseData {
   name: string;
   city: string;
   address: string;

@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { WharehouseModule } from './wharehouse/wharehouse.module';
 import { UserModule } from './user/user.module';
+import { PackageModule } from './package/package.module';
+import { TruckModule } from './truck/truck.module';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
@@ -10,7 +12,9 @@ import { Connection } from 'typeorm';
   imports: [
     TypeOrmModule.forRoot(),
     WharehouseModule,
-    UserModule
+    UserModule,
+    PackageModule,
+    TruckModule
   ],
   controllers: [AppController],
   providers: [AppService],

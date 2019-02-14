@@ -28,9 +28,9 @@ export class WharehouseController {
     return await this.wharehouseService.findAll();
   }
 
-  @Get(':slug')
-  async findOne(@Param('slug') slug): Promise<WharehouseRO> {
-    return await this.wharehouseService.findOne({slug});
+  @Get(':packageId')
+  async findOne(@Param('packageId') id): Promise<WharehouseEntity> {
+    return await this.wharehouseService.findOne({id});
   }
 
   @UsePipes(new ValidationPipe())

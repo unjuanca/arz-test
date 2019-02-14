@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, BeforeInsert} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from "typeorm";
 import { Validate } from 'class-validator';
 import * as crypto from 'crypto';
 

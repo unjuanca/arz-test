@@ -19,9 +19,8 @@ export class WharehouseService {
     return await this.wharehouseRepository.find();
   }
 
-  async findOne(where): Promise<WharehouseRO> {
-    const wharehouse = await this.wharehouseRepository.findOne(where);
-    return {wharehouse};
+  async findOne(where): Promise<WharehouseEntity> {
+    return await this.wharehouseRepository.findOne(where,{ relations: ["packages"] });
   }
 
   async create(wharehouseData: CreateWharehouseDto): Promise<WharehouseEntity> {

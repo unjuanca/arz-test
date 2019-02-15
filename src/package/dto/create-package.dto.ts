@@ -11,4 +11,13 @@ export class CreatePackageDto {
   @IsOptional()
   readonly wharehouse: number;
 
+  @IsOptional()
+  readonly truck: number;
+
+  @IsOptional()
+  readonly cost: number;
+
+  @IsOptional()
+  readonly limit_date: Date;
+
 }

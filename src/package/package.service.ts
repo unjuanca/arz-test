@@ -4,6 +4,7 @@ import { Repository, getRepository } from 'typeorm';
 import { PackageEntity } from './package.entity';
 
 import { WharehouseEntity } from '../wharehouse/wharehouse.entity';
+import { TruckEntity } from '../truck/truck.entity';
 import { CreatePackageDto } from './dto';
 
 import { PackageRO, PackageData } from './package.interface';
@@ -14,7 +15,9 @@ export class PackageService {
     @InjectRepository(PackageEntity)
     private readonly packageRepository: Repository<PackageEntity>,
     @InjectRepository(WharehouseEntity)
-    private readonly wharehouseRepository: Repository<WharehouseEntity>
+    private readonly wharehouseRepository: Repository<WharehouseEntity>,
+    @InjectRepository(TruckEntity)
+    private readonly truckRepository: Repository<TruckEntity>
   ) {}
 
   async findAll(): Promise<PackageEntity[]> {
@@ -33,6 +36,11 @@ export class PackageService {
     if(packageData.wharehouse){
       const wharehouse = await this.wharehouseRepository.findOne(packageData.wharehouse);
       packge.wharehouse = wharehouse;//if not valid wharehouse, it put in on null
+    }
+
+    if(packageData.truck){
+      const truck = await this.truckRepository.findOne(packageData.truck);
+      packge.truck = truck;//if not valid truck, it put in on null
     }
 
     const newWharehouse = await this.packageRepository.save(packge);

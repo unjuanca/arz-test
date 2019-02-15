@@ -6,9 +6,10 @@ import { PackageService } from './package.service';
 import { AuthMiddleware } from '../user/auth.middleware';
 import { UserModule } from '../user/user.module';
 import { WharehouseModule } from '../wharehouse/wharehouse.module';
+import { TruckModule } from '../truck/truck.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PackageEntity]), UserModule, WharehouseModule],
+  imports: [TypeOrmModule.forFeature([PackageEntity]), UserModule, WharehouseModule, TruckModule],
   providers: [PackageService],
   controllers: [
     PackageController

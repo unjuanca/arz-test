@@ -35,7 +35,6 @@ export class TruckController {
   @UsePipes(new ValidationPipe())
   @Post()
   async create(@Body('truck') truckData: CreateTruckDto) {
-    console.log("This is a wharehouse >>> ",truckData);
     return this.truckService.create(truckData);
   }
 

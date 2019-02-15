@@ -4,6 +4,7 @@ import { WharehouseModule } from './wharehouse/wharehouse.module';
 import { UserModule } from './user/user.module';
 import { PackageModule } from './package/package.module';
 import { TruckModule } from './truck/truck.module';
+import { AlertModule } from './main-office-alert/alert.module';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
@@ -14,7 +15,8 @@ import { Connection } from 'typeorm';
     WharehouseModule,
     UserModule,
     PackageModule,
-    TruckModule
+    TruckModule,
+    AlertModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -3,7 +3,7 @@ import { WharehouseEntity } from './wharehouse.entity';
 export interface WharehouseData {
   name: string;
   city: string;
-  address: string;
+  country: string;
   limit: number;
 }
 

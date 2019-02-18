@@ -15,7 +15,7 @@ export class WharehouseEntity {
   city: string;
 
   @Column()
-  address: string;
+  country: string;
 
   @Column({default: 0})
   limit: number;

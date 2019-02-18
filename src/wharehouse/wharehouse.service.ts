@@ -27,7 +27,7 @@ export class WharehouseService {
     let wharehouse = new WharehouseEntity();
     wharehouse.name = wharehouseData.name;
     wharehouse.city = wharehouseData.city;
-    wharehouse.address = wharehouseData.address;
+    wharehouse.country = wharehouseData.country;
     wharehouse.limit = wharehouseData.limit;
 
     const newWharehouse = await this.wharehouseRepository.save(wharehouse);

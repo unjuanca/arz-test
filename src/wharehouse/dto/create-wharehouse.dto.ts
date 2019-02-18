@@ -9,7 +9,7 @@ export class CreateWharehouseDto {
   readonly city: string;
 
   @IsNotEmpty()
-  readonly address: string;
+  readonly country: string;
 
   @IsInt()
   readonly limit: number;

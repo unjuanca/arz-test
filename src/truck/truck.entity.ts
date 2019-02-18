@@ -11,7 +11,7 @@ export class TruckEntity {
   @Column()
   description: string;
 
-  @ManyToOne(type => WharehouseEntity, wharehouse => wharehouse.trucks, { nullable: false })
+  @ManyToOne(type => WharehouseEntity, wharehouse => wharehouse.trucks)
   wharehouse: WharehouseEntity;
 
   @OneToMany(type => PackageEntity, pckage => pckage.truck)

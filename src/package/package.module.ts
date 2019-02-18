@@ -22,8 +22,7 @@ export class PackageModule implements NestModule {
       .forRoutes(
         {path: 'packages/', method: RequestMethod.GET},
         {path: 'package/:id', method: RequestMethod.GET},
-        {path: 'package/', method: RequestMethod.POST},
-        {path: 'packages/distance', method: RequestMethod.GET}
+        {path: 'package/', method: RequestMethod.POST}
       );
   }
 }

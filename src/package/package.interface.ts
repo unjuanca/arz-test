@@ -9,8 +9,8 @@ export interface PackageData {
   wharehouse?: WharehouseData;
   truck?: TruckData;
   cost?: number;
-  limit_date?: Date;
-  delivered_date?:Date;
+  penalty_cost?: number;
+  deliver_date?:Date;
 }
 
 export interface PackageRO {

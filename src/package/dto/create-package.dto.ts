@@ -18,6 +18,6 @@ export class CreatePackageDto {
   readonly cost: number;
 
   @IsOptional()
-  readonly limit_date: Date;
+  readonly deliver_date: Date;
 
 }

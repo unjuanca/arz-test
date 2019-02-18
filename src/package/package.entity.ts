@@ -23,12 +23,12 @@ export class PackageEntity {
   @Column({ type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
   created: Date;
 
-  @Column({default: 0})
+  @Column({default: 0, type: 'float'})
   cost: number;
 
-  @Column({default: null})
-  limit_date: Date;
+  @Column({default: 0, type: 'float'})
+  penalty_cost: number;
 
-  @Column({default: null})
-  delivered_date: Date;
+  @Column({default: null, type: 'date'})
+  deliver_date: Date;
 }

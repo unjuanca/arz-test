@@ -1,0 +1,10 @@
+{
+  "type": "mysql",
+  "host": "localhost",
+  "port": 3306,
+  "username": "APIUser",
+  "password": "APIPass123",
+  "database": "ARZTEST_DB",
+  "entities": ["src/**/**.entity{.ts,.js}"],
+  "synchronize": true
+}

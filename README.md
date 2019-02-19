@@ -44,6 +44,8 @@ This applications uses JSON Web Token (JWT) to handle authentication. The token 
 Authorization: Token jwt.token.here
 ```
 
+To login in API, check endpoint /api/login below
+
 ## API Specification - Most important endpoints
 
 Use `Content-type` header to request:
@@ -94,8 +96,20 @@ Example request body:
 
 {
   "package": {
-  "address": "Ranchos, Argentina",
+  "address": "-35.164409, -57.871817",
   "description": "Este es un recontra paquete322",
+  "deliver_date": "2019-02-18"
+  }
+}
+```
+
+```bash
+Address may can be a city:
+
+{
+  "package": {
+  "address": "Ranchos, Argentina",
+  "description": "Este es un paquete de contenido frágil",
   "deliver_date": "2019-02-18"
   }
 }

@@ -15,4 +15,7 @@ export class AlertEntity {
 
   @Column({ type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
   created: Date;
+
+  @Column({default: null, type: 'date'})
+  full_date: Date;
 }

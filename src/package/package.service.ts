@@ -5,6 +5,7 @@ import { PackageEntity } from './package.entity';
 
 import { WharehouseEntity } from '../wharehouse/wharehouse.entity';
 import { TruckEntity } from '../truck/truck.entity';
+import { AlertEntity } from '../main-office-alert/alert.entity';
 import { CreatePackageDto } from './dto';
 
 import { GOOGLE_API_KEY,PERCENT_LIMIT,PENALTY_COST } from '../config';
@@ -20,7 +21,9 @@ export class PackageService {
     @InjectRepository(WharehouseEntity)
     private readonly wharehouseRepository: Repository<WharehouseEntity>,
     @InjectRepository(TruckEntity)
-    private readonly truckRepository: Repository<TruckEntity>
+    private readonly truckRepository: Repository<TruckEntity>,
+    @InjectRepository(AlertEntity)
+    private readonly alertRepository: Repository<AlertEntity>
   ) {}
 
   async findAll(): Promise<PackageEntity[]> {
@@ -124,6 +127,12 @@ export class PackageService {
           var date = deliverDate;
           ok = true;
           break;
+        }else{
+          let alert = new AlertEntity();
+          alert.description = 'This wharehouse reaches 95% of its limit on '+deliverDate;
+          alert.wharehouse = await this.wharehouseRepository.findOne(wharehousesSorted[i]['distance'].id);
+          alert.full_date = deliverDate;
+          this.alertRepository.save(alert);
         }
       }
       //if all wharehouses are full, then add a day and penalty cost

@@ -15,7 +15,7 @@ $ npm install
 $ npm run start
 ```
 
-## Database
+## Database connection
 
 ```bash
 Set mysql database settings in ormconfig.json
@@ -31,6 +31,10 @@ Set mysql database settings in ormconfig.json
   "synchronize": true
 }
 ```
+
+## Example database
+
+Inside folder "database" on project root folder, there is a dump of an example database. To test fullish date, test to save a package for a 2019-02-20
 
 # Authentication
 

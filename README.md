@@ -32,6 +32,14 @@ Set mysql database settings in ormconfig.json
 }
 ```
 
+# Authentication
+
+This applications uses JSON Web Token (JWT) to handle authentication. The token is passed with each request using the `Authorization` header with `Token` scheme.
+
+```bash
+Authorization: Token jwt.token.here
+```
+
 ## API Specification - Most important endpoints
 
 ### Users

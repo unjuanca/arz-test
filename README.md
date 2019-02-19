@@ -40,6 +40,11 @@ This applications uses JSON Web Token (JWT) to handle authentication. The token 
 Authorization: Token jwt.token.here
 ```
 
+Use `Content-type` header to request:
+```bash
+Content-type: application/json
+```
+
 ## API Specification - Most important endpoints
 
 ### Users

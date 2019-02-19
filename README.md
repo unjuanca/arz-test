@@ -88,16 +88,6 @@ Get all packages:
 
 GET /api/packages
 
-```bash
-{
-  "package": {
-  "address": "Ranchos, Argentina",
-  "description": "Este es un recontra paquete322",
-  "deliver_date": "2019-02-18"
-  }
-}
-```
-
 Get package by id:
 
 GET /api/packages/:packageId

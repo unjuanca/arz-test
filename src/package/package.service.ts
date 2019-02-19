@@ -50,7 +50,7 @@ export class PackageService {
       const errors = {wharehouse: 'An error occurs with wharehouses'};
       throw new HttpException({message: 'Input data validation failed', errors}, HttpStatus.BAD_REQUEST);
     }
-    packge.penalty_cost = wharehouseData.penalty_cost;
+    packge.penalty_cost = wharehouseData.penaltyCost;
     packge.deliver_date = wharehouseData.date;
     packge.cost = await this.getCost(wharehouseData.distance);
 
@@ -73,30 +73,35 @@ export class PackageService {
     return cost/5;
   }
 
-  async getWharehouseAndDate(address: string,deliver_date): Promise<any>{
+  async getWharehouseAndDate(address: string,deliverDate): Promise<any>{
     var origin = [address];
     var wharehouses = await this.getDestinations();
     var destinations = [];
-    var destinations_ids = [];
+    var destinationsId = [];
 
     for(var i = 0; i < wharehouses.length; i++){
       //this is to check id from wharehouse (remind association by position)
-      destinations_ids.push({name:`${wharehouses[i].city}, ${wharehouses[i].country}`,id:wharehouses[i].id,limit:wharehouses[i].limit});
+      destinationsId.push({name:`${wharehouses[i].city}, ${wharehouses[i].country}`,id:wharehouses[i].id,limit:wharehouses[i].limit});
       //this is to send to api
       destinations.push(`${wharehouses[i].city}, ${wharehouses[i].country}`);
     }
 
     const distancesRes = await this.getMatrix(origin,destinations);
 
+    if(!distancesRes.origin_addresses[0]){
+      const errors = {origin_addresses: 'Origin address is not valid'};
+      throw new HttpException({message: 'Input data validation failed', errors}, HttpStatus.BAD_REQUEST);
+    }
+
     for(var i = 0; i < distancesRes.rows[0].elements.length; i++){
       //the association between destinations cities and distances are by position. Because of them, I assume that this ids are always ok
       if(distancesRes.rows[0].elements[i]['status'] === 'OK'){
-          distancesRes.rows[0].elements[i]['distance'].id = destinations_ids[i].id;
-          distancesRes.rows[0].elements[i]['distance'].limit = destinations_ids[i].limit;
+          distancesRes.rows[0].elements[i]['distance'].id = destinationsId[i].id;
+          distancesRes.rows[0].elements[i]['distance'].limit = destinationsId[i].limit;
       }else{
         //If a destionations wasn't ok, the we wants removes them from arrays
          distancesRes.rows[0].elements.splice(i,1);
-         destinations_ids.splice(i,1);
+         destinationsId.splice(i,1);
       }
     }
 
@@ -104,31 +109,31 @@ export class PackageService {
       return prev['distance'].value - curr['distance'].value;
     });
     var ok = false;
-    var penalty_cost = 0;
+    var penaltyCost = 0;
     while(!ok){
       for(var i = 0; i < wharehousesSorted.length; i++){
         var res = await this.packageRepository
           .createQueryBuilder('package')
           .select('*')
           .where('wharehouseId = :wharehouse', { wharehouse:wharehousesSorted[i]['distance'].id })
-          .andWhere('deliver_date = :deliver_date', { deliver_date:deliver_date })
+          .andWhere('deliver_date = :deliver_date', { deliver_date:deliverDate })
           .getCount();
         if(res*100/wharehousesSorted[i]['distance'].limit < PERCENT_LIMIT){
           var wharehouse = wharehousesSorted[i]['distance'].id;
           var distance = wharehousesSorted[i]['distance'].text;
-          var date = deliver_date;
+          var date = deliverDate;
           ok = true;
           break;
         }
       }
       //if all wharehouses are full, then add a day and penalty cost
       if(!ok){
-        deliver_date = this.addDate(deliver_date);
-        penalty_cost += PENALTY_COST;
+        deliverDate = this.addDate(deliverDate);
+        penaltyCost += PENALTY_COST;
       }
     }
 
-    return {wharehouse,distance,date,penalty_cost};
+    return {wharehouse,distance,date,penaltyCost};
   }
 
   public addDate(str) {

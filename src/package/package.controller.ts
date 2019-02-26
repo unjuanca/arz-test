@@ -15,7 +15,7 @@ import {
 
 @ApiBearerAuth()
 @ApiUseTags('packages')
-@Controller('packiges')
+@Controller('packages')
 export class PackageController {
 
   constructor(private readonly packageService: PackageService) {}

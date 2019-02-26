@@ -3,13 +3,13 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const appOptions = {cors: true};
+  const appOptions = { cors: true };
   const app = await NestFactory.create(AppModule, appOptions);
   app.setGlobalPrefix('api');
 
   const options = new DocumentBuilder()
     .setTitle('ArzTest App')
-    .setDescription('This is an API for Arzion\'s test')
+    .setDescription("This is an API for Arzion's test")
     .setVersion('1.0')
     .setBasePath('api')
     .addBearerAuth()

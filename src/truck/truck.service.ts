@@ -1,4 +1,9 @@
-import { Component, Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Component,
+  Injectable,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, getRepository } from 'typeorm';
 import { TruckEntity } from './truck.entity';
@@ -14,7 +19,7 @@ export class TruckService {
     @InjectRepository(TruckEntity)
     private readonly truckRepository: Repository<TruckEntity>,
     @InjectRepository(WharehouseEntity)
-    private readonly wharehouseRepository: Repository<WharehouseEntity>
+    private readonly wharehouseRepository: Repository<WharehouseEntity>,
   ) {}
 
   async findAll(): Promise<TruckEntity[]> {
@@ -22,18 +27,25 @@ export class TruckService {
   }
 
   async findOne(where): Promise<TruckEntity> {
-    return await this.truckRepository.findOne(where, {relations:['wharehouse']});
+    return await this.truckRepository.findOne(where, {
+      relations: ['wharehouse'],
+    });
   }
 
   async create(truckData: CreateTruckDto): Promise<TruckEntity> {
     let truck = new TruckEntity();
     truck.description = truckData.description;
 
-    if(truckData.wharehouse){
-      const wharehouse = await this.wharehouseRepository.findOne(truckData.wharehouse);
-      if(!wharehouse){
-        const errors = {wharehouse: 'Wharehouse doesn\'t exists'};
-        throw new HttpException({message: 'Input data validation failed', errors}, HttpStatus.BAD_REQUEST);
+    if (truckData.wharehouse) {
+      const wharehouse = await this.wharehouseRepository.findOne(
+        truckData.wharehouse,
+      );
+      if (!wharehouse) {
+        const errors = { wharehouse: "Wharehouse doesn't exists" };
+        throw new HttpException(
+          { message: 'Input data validation failed', errors },
+          HttpStatus.BAD_REQUEST,
+        );
       }
       truck.wharehouse = wharehouse;
     }
@@ -41,6 +53,5 @@ export class TruckService {
     const newWharehouse = await this.truckRepository.save(truck);
 
     return newWharehouse;
-
   }
 }

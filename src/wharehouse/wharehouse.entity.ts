@@ -4,7 +4,6 @@ import { TruckEntity } from '../truck/truck.entity';
 
 @Entity('wharehouse')
 export class WharehouseEntity {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -17,7 +16,7 @@ export class WharehouseEntity {
   @Column()
   country: string;
 
-  @Column({default: 0})
+  @Column({ default: 0 })
   limit: number;
 
   @OneToMany(type => PackageEntity, pckage => pckage.wharehouse)

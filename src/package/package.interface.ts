@@ -9,7 +9,7 @@ export interface PackageData {
   truck?: TruckData;
   cost?: number;
   penalty_cost?: number;
-  deliver_date?:Date;
+  deliver_date?: Date;
 }
 
 export interface PackageRO {

@@ -11,6 +11,6 @@ export interface WharehouseRO {
   wharehouse: WharehouseData;
 }
 
-export interface  WharehousesRO {
+export interface WharehousesRO {
   wharehouses: WharehouseData[];
 }

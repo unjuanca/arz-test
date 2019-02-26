@@ -1,10 +1,15 @@
 import { WharehouseEntity } from '../wharehouse/wharehouse.entity';
 import { PackageEntity } from '../package/package.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 
 @Entity('truck')
 export class TruckEntity {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -17,7 +22,6 @@ export class TruckEntity {
   @OneToMany(type => PackageEntity, pckage => pckage.truck)
   packages: PackageEntity[];
 
-  @Column({ type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created: Date;
-
 }

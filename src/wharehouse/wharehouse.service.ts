@@ -6,13 +6,13 @@ import { WharehouseEntity } from './wharehouse.entity';
 //import { UserEntity } from '../user/user.entity';
 import { CreateWharehouseDto } from './dto';
 
-import {WharehouseRO, WharehousesRO} from './wharehouse.interface';
+import { WharehouseRO, WharehousesRO } from './wharehouse.interface';
 
 @Injectable()
 export class WharehouseService {
   constructor(
     @InjectRepository(WharehouseEntity)
-    private readonly wharehouseRepository: Repository<WharehouseEntity>
+    private readonly wharehouseRepository: Repository<WharehouseEntity>,
   ) {}
 
   async findAll(): Promise<WharehouseEntity[]> {
@@ -20,7 +20,9 @@ export class WharehouseService {
   }
 
   async findOne(where): Promise<WharehouseEntity> {
-    return await this.wharehouseRepository.findOne(where,{ relations: ["packages"] });
+    return await this.wharehouseRepository.findOne(where, {
+      relations: ['packages'],
+    });
   }
 
   async create(wharehouseData: CreateWharehouseDto): Promise<WharehouseEntity> {
@@ -33,6 +35,5 @@ export class WharehouseService {
     const newWharehouse = await this.wharehouseRepository.save(wharehouse);
 
     return newWharehouse;
-
   }
 }

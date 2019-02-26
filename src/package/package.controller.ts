@@ -1,4 +1,12 @@
-import {Get, Post, Body, Query, Param, Controller, UsePipes} from '@nestjs/common';
+import {
+  Get,
+  Post,
+  Body,
+  Query,
+  Param,
+  Controller,
+  UsePipes,
+} from '@nestjs/common';
 //import { Request } from 'express';
 import { PackageService } from './package.service';
 import { PackageEntity } from './package.entity';
@@ -17,11 +25,10 @@ import {
 @ApiUseTags('packages')
 @Controller('packages')
 export class PackageController {
-
   constructor(private readonly packageService: PackageService) {}
 
   @ApiOperation({ title: 'Get all packages' })
-  @ApiResponse({ status: 200, description: 'Return all packages.'})
+  @ApiResponse({ status: 200, description: 'Return all packages.' })
   @Get()
   async findAll(): Promise<PackageEntity[]> {
     return await this.packageService.findAll();
@@ -29,7 +36,7 @@ export class PackageController {
 
   @Get(':packageId')
   async findOne(@Param('packageId') id): Promise<PackageEntity> {
-    return await this.packageService.findOne({id});
+    return await this.packageService.findOne({ id });
   }
 
   @UsePipes(new ValidationPipe())
@@ -37,5 +44,4 @@ export class PackageController {
   async create(@Body('package') packageData: CreatePackageDto) {
     return this.packageService.create(packageData);
   }
-
 }

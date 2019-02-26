@@ -16,7 +16,7 @@ import { Connection } from 'typeorm';
     UserModule,
     PackageModule,
     TruckModule,
-    AlertModule
+    AlertModule,
   ],
   controllers: [],
   providers: [],

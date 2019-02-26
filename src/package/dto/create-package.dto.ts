@@ -1,7 +1,6 @@
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreatePackageDto {
-
   @IsNotEmpty()
   readonly address: string;
 
@@ -19,5 +18,4 @@ export class CreatePackageDto {
 
   @IsOptional()
   readonly deliver_date: Date;
-
 }

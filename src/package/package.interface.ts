@@ -1,4 +1,3 @@
-import { PackageEntity } from './package.entity';
 import { WharehouseData } from '../wharehouse/wharehouse.interface';
 import { TruckData } from '../truck/truck.interface';
 

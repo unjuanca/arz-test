@@ -1,6 +1,6 @@
-import { Component, Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, getRepository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { PackageEntity } from './package.entity';
 
 import { WharehouseEntity } from '../wharehouse/wharehouse.entity';
@@ -8,10 +8,9 @@ import { TruckEntity } from '../truck/truck.entity';
 import { AlertEntity } from '../main-office-alert/alert.entity';
 import { CreatePackageDto } from './dto';
 
-import { GOOGLE_API_KEY,PERCENT_LIMIT,PENALTY_COST } from '../config';
+import { PERCENT_LIMIT,PENALTY_COST } from '../config';
 
-var distance = require('google-distance-matrix');
-distance.key(GOOGLE_API_KEY);
+import distance from '../shared/googlemaps.api';
 
 @Injectable()
 export class PackageService {
@@ -115,12 +114,7 @@ export class PackageService {
     var penaltyCost = 0;
     while(!ok){
       for(var i = 0; i < wharehousesSorted.length; i++){
-        var res = await this.packageRepository
-          .createQueryBuilder('package')
-          .select('*')
-          .where('wharehouseId = :wharehouse', { wharehouse:wharehousesSorted[i]['distance'].id })
-          .andWhere('deliver_date = :deliver_date', { deliver_date:deliverDate })
-          .getCount();
+        var res = await this.getByDate(wharehousesSorted[i]['distance'].id,deliverDate);
         if(res*100/wharehousesSorted[i]['distance'].limit < PERCENT_LIMIT){
           var wharehouse = wharehousesSorted[i]['distance'].id;
           var distance = wharehousesSorted[i]['distance'].text;
@@ -143,6 +137,15 @@ export class PackageService {
     }
 
     return {wharehouse,distance,date,penaltyCost};
+  }
+
+  async getByDate(wharehouse:number,deliverDate:string){
+    return await this.packageRepository
+      .createQueryBuilder('package')
+      .select('*')
+      .where('wharehouseId = :wharehouse', { wharehouse:wharehouse })
+      .andWhere('deliver_date = :deliver_date', { deliver_date:deliverDate })
+      .getCount()
   }
 
   public addDate(str) {

@@ -1,9 +1,8 @@
 import {Get, Post, Body, Query, Param, Controller, UsePipes} from '@nestjs/common';
-import { Request } from 'express';
+//import { Request } from 'express';
 import { AlertService } from './alert.service';
 import { AlertEntity } from './alert.entity';
 import { CreateAlertDto } from './dto';
-//import { AlertData } from './alert.interface';
 import { ValidationPipe } from '../shared/pipes/validation.pipe';
 
 import {

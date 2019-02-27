@@ -14,6 +14,7 @@ import { WharehouseModule } from '../wharehouse/wharehouse.module';
 import { TruckModule } from '../truck/truck.module';
 import { AlertModule } from '../main-office-alert/alert.module';
 import { PackagesCountModule } from '../packages-count/packages-count.module';
+import { PackageHelperService } from './package-helper.service';
 
 @Module({
   imports: [
@@ -24,8 +25,9 @@ import { PackagesCountModule } from '../packages-count/packages-count.module';
     AlertModule,
     PackagesCountModule,
   ],
-  providers: [PackageService],
+  providers: [PackageService,PackageHelperService],
   controllers: [PackageController],
+  exports: [PackageHelperService],
 })
 export class PackageModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {

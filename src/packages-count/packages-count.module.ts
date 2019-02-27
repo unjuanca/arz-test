@@ -2,6 +2,7 @@ import {
   MiddlewareConsumer,
   Module,
   NestModule,
+  forwardRef,
 } from '@nestjs/common';
 import { PackagesCountController } from './packages-count.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -12,7 +13,7 @@ import { WharehouseModule } from '../wharehouse/wharehouse.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([PackagesCountEntity]),
-    WharehouseModule,
+    forwardRef(() => WharehouseModule),
   ],
   providers: [PackagesCountService],
   controllers: [PackagesCountController],

@@ -42,6 +42,9 @@ export class PackageService {
   }
 
   async create(packageData: CreatePackageDto): Promise<PackageEntity> {
+
+    this.validateDate(packageData.deliver_date);
+
     let packge = new PackageEntity();
     packge.description = packageData.description;
     packge.address = packageData.address;
@@ -51,8 +54,10 @@ export class PackageService {
       packageData.deliver_date,
     );
 
+    let wharehouse;
+
     if (wharehouseData) {
-      const wharehouse = await this.wharehouseRepository.findOne(
+      wharehouse = await this.wharehouseRepository.findOne(
         wharehouseData.wharehouse,
       );
       if (!wharehouse) {
@@ -77,7 +82,12 @@ export class PackageService {
     packge.deliver_date = wharehouseData.date;
     packge.cost = await this.getCost(wharehouseData.distance);
 
-    return await this.packageRepository.save(packge);
+    const newPackage = await this.packageRepository.save(packge);
+    if(newPackage){
+      this.packageCountService.addCount({date:packge.deliver_date,wharehouse:wharehouse});
+    }
+
+    return newPackage;
   }
 
   async getCost(distance: string): Promise<any> {
@@ -100,23 +110,34 @@ export class PackageService {
   }
 
   async getWharehouseAndDate(address: string, deliverDate): Promise<any> {
-    console.log('>>>whahouse>>>>',this.wharehouseService,'<<<<<<<<<<<');
-    console.log('>>>packagecount>>>>',this.packageCountService,'<<<<<<<<<<<');
     var origin = [address];
     var wharehouses = await this.wharehouseService.findAll();
     var destinations = [];
     var destinationsId = [];
 
-    console.log(wharehouses);
+    let packagesCount = await this.packageCountService.find({date:deliverDate});
 
-    /*
-    let res = await this.getPackagesCountByDate(
-      deliverDate
-    );
-    */
-    let res = await this.packageCountService.find({date:deliverDate});
+    let ok = false;
+    let penaltyCost = 0;
 
-    console.log('resresres>>',res);
+    while(!(!packagesCount || packagesCount.length < wharehouses.length) && !ok){
+      for (let i = 0; i < packagesCount.length; i++) {
+        let whFound = wharehouses.find((wh)=> wh.id === packagesCount[i].wharehouse.id );
+        if (
+          ((packagesCount[i].count * 100) / whFound.limit) <
+          PERCENT_LIMIT
+        ) {
+          ok = true;
+          break;
+        }
+      }
+      //if all wharehouses are full, then add a day and penalty cost
+      if (!ok) {
+        deliverDate = this.addDate(deliverDate);
+        penaltyCost += PENALTY_COST;
+        packagesCount = await this.packageCountService.find({date:deliverDate});
+      }
+    }
 
     for (var i = 0; i < wharehouses.length; i++) {
       //this is to check id from wharehouse (remind association by position)
@@ -124,7 +145,7 @@ export class PackageService {
         name: `${wharehouses[i].city}, ${wharehouses[i].country}`,
         id: wharehouses[i].id,
         limit: wharehouses[i].limit,
-
+        count: (packagesCount.find((pc)=> pc.wharehouse.id === wharehouses[i].id ))?(packagesCount.find((pc)=> pc.wharehouse.id === wharehouses[i].id ).count):(0)
       });
       //this is to send to api
       destinations.push(`${wharehouses[i].city}, ${wharehouses[i].country}`);
@@ -143,9 +164,19 @@ export class PackageService {
     for (var i = 0; i < distancesRes.rows[0].elements.length; i++) {
       //the association between destinations cities and distances are by position. Because of them, I assume that this ids are always ok
       if (distancesRes.rows[0].elements[i]['status'] === 'OK') {
-        distancesRes.rows[0].elements[i]['distance'].id = destinationsId[i].id;
-        distancesRes.rows[0].elements[i]['distance'].limit =
+        if (
+          ((destinationsId[i].count * 100) / destinationsId[i].limit) >=
+          PERCENT_LIMIT
+        ) {
+          //If limit is exceeded, I remove it
+          distancesRes.rows[0].elements.splice(i, 1);
+          destinationsId.splice(i, 1);
+        }else{
+          distancesRes.rows[0].elements[i].id = destinationsId[i].id;
+          distancesRes.rows[0].elements[i].limit =
           destinationsId[i].limit;
+          distancesRes.rows[0].elements[i].count = destinationsId[i].count;
+        }
       } else {
         //If a destionations wasn't ok, the we wants removes them from arrays
         distancesRes.rows[0].elements.splice(i, 1);
@@ -153,53 +184,15 @@ export class PackageService {
       }
     }
 
-    var wharehousesSorted = distancesRes.rows[0].elements.sort(function(
-      prev,
-      curr,
-    ) {
-      return prev['distance'].value - curr['distance'].value;
+    let nearestWharehouse = distancesRes.rows[0].elements.reduce(function(prev, curr) {
+        return prev['distance'].value < curr['distance'].value ? prev : curr;
     });
-    let ok = false;
-    let penaltyCost = 0;
 
-    /*
-    while (!ok) {
+    const wharehouse = nearestWharehouse.id;
+    const distance = nearestWharehouse['distance'].text;
+    const date = deliverDate;
 
-      for (let i = 0; i < wharehousesSorted.length; i++) {
-        let res = await this.getByDate(
-          wharehousesSorted[i]['distance'].id,
-          deliverDate,
-        );
-        if (
-          (res * 100) / wharehousesSorted[i]['distance'].limit <
-          PERCENT_LIMIT
-        ) {
-          var wharehouse = wharehousesSorted[i]['distance'].id;
-          var distance = wharehousesSorted[i]['distance'].text;
-          var date = deliverDate;
-          ok = true;
-          break;
-        } else {
-          let alert = new AlertEntity();
-          alert.description =
-            'This wharehouse reaches 95% of its limit on ' + deliverDate;
-          alert.wharehouse = await this.wharehouseRepository.findOne(
-            wharehousesSorted[i]['distance'].id,
-          );
-          alert.full_date = deliverDate;
-          this.alertRepository.save(alert);
-        }
-      }
-
-      //if all wharehouses are full, then add a day and penalty cost
-      if (!ok) {
-        deliverDate = this.addDate(deliverDate);
-        penaltyCost += PENALTY_COST;
-      }
-    }*/
-
-    //return { wharehouse, distance, date, penaltyCost };
-    return false;
+    return { wharehouse, distance, date, penaltyCost };
   }
 
   async getByDate(wharehouse: number, deliverDate: string) {
@@ -233,6 +226,19 @@ export class PackageService {
     if (day.length < 2) day = '0' + day;
 
     return [year, month, day].join('-');
+  }
+
+  public validateDate(str){
+    const p = str.split('-');
+    const date = new Date(p[0], parseInt(p[1])-1, p[2]);
+    const today = new Date();
+    if(date < today){
+      const errors = { deliver_date: 'Deliver date must be greater than current' };
+      throw new HttpException(
+        { message: 'Input data validation failed', errors },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   public getMatrix(origin: object,destinations: object): Promise<any>{

@@ -1,11 +1,4 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { PackageEntity } from './package.entity';
-
-import { PackagesCountService } from '../packages-count/packages-count.service';
-import { AlertService } from '../main-office-alert/alert.service'
-
 
 @Injectable()
 export class PackageHelperService {

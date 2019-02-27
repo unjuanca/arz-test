@@ -20,6 +20,7 @@ import { WharehouseModule } from '../wharehouse/wharehouse.module';
   ],
   providers: [AlertService],
   controllers: [AlertController],
+  exports: [AlertService],
 })
 export class AlertModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {

@@ -15,6 +15,7 @@ import { UserModule } from '../user/user.module';
   imports: [TypeOrmModule.forFeature([WharehouseEntity]), UserModule],
   providers: [WharehouseService],
   controllers: [WharehouseController],
+  exports: [WharehouseService],
 })
 export class WharehouseModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {

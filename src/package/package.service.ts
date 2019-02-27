@@ -4,9 +4,14 @@ import { Repository } from 'typeorm';
 import { PackageEntity } from './package.entity';
 
 import { WharehouseEntity } from '../wharehouse/wharehouse.entity';
+import { PackagesCountEntity } from '../packages-count/packages-count.entity';
 import { TruckEntity } from '../truck/truck.entity';
 import { AlertEntity } from '../main-office-alert/alert.entity';
 import { CreatePackageDto } from './dto';
+
+import { WharehouseService } from '../wharehouse/wharehouse.service';
+import { PackagesCountService } from '../packages-count/packages-count.service';
+import { AlertService } from '../main-office-alert/alert.service'
 
 import { PERCENT_LIMIT, PENALTY_COST } from '../config';
 
@@ -21,8 +26,9 @@ export class PackageService {
     private readonly wharehouseRepository: Repository<WharehouseEntity>,
     @InjectRepository(TruckEntity)
     private readonly truckRepository: Repository<TruckEntity>,
-    @InjectRepository(AlertEntity)
-    private readonly alertRepository: Repository<AlertEntity>,
+    private readonly alertService: AlertService,
+    private readonly wharehouseService: WharehouseService,
+    private readonly packageCountService: PackagesCountService,
   ) {}
 
   async findAll(): Promise<PackageEntity[]> {
@@ -94,10 +100,23 @@ export class PackageService {
   }
 
   async getWharehouseAndDate(address: string, deliverDate): Promise<any> {
+    console.log('>>>whahouse>>>>',this.wharehouseService,'<<<<<<<<<<<');
+    console.log('>>>packagecount>>>>',this.packageCountService,'<<<<<<<<<<<');
     var origin = [address];
-    var wharehouses = await this.getDestinations();
+    var wharehouses = await this.wharehouseService.findAll();
     var destinations = [];
     var destinationsId = [];
+
+    console.log(wharehouses);
+
+    /*
+    let res = await this.getPackagesCountByDate(
+      deliverDate
+    );
+    */
+    let res = await this.packageCountService.find({date:deliverDate});
+
+    console.log('resresres>>',res);
 
     for (var i = 0; i < wharehouses.length; i++) {
       //this is to check id from wharehouse (remind association by position)
@@ -105,6 +124,7 @@ export class PackageService {
         name: `${wharehouses[i].city}, ${wharehouses[i].country}`,
         id: wharehouses[i].id,
         limit: wharehouses[i].limit,
+
       });
       //this is to send to api
       destinations.push(`${wharehouses[i].city}, ${wharehouses[i].country}`);
@@ -139,11 +159,14 @@ export class PackageService {
     ) {
       return prev['distance'].value - curr['distance'].value;
     });
-    var ok = false;
-    var penaltyCost = 0;
+    let ok = false;
+    let penaltyCost = 0;
+
+    /*
     while (!ok) {
-      for (var i = 0; i < wharehousesSorted.length; i++) {
-        var res = await this.getByDate(
+
+      for (let i = 0; i < wharehousesSorted.length; i++) {
+        let res = await this.getByDate(
           wharehousesSorted[i]['distance'].id,
           deliverDate,
         );
@@ -167,14 +190,16 @@ export class PackageService {
           this.alertRepository.save(alert);
         }
       }
+
       //if all wharehouses are full, then add a day and penalty cost
       if (!ok) {
         deliverDate = this.addDate(deliverDate);
         penaltyCost += PENALTY_COST;
       }
-    }
+    }*/
 
-    return { wharehouse, distance, date, penaltyCost };
+    //return { wharehouse, distance, date, penaltyCost };
+    return false;
   }
 
   async getByDate(wharehouse: number, deliverDate: string) {
@@ -184,6 +209,15 @@ export class PackageService {
       .where('wharehouseId = :wharehouse', { wharehouse: wharehouse })
       .andWhere('deliver_date = :deliver_date', { deliver_date: deliverDate })
       .getCount();
+  }
+
+  async getPackagesCountByDate(deliverDate: string) {
+    return await this.packageRepository
+      .createQueryBuilder('package')
+      .select('wharehouseId,COUNT(*) as cant')
+      .where('deliver_date = :deliver_date', { deliver_date: deliverDate })
+      .groupBy('wharehouseId')
+      .getRawMany();
   }
 
   public addDate(str) {
@@ -201,17 +235,15 @@ export class PackageService {
     return [year, month, day].join('-');
   }
 
-  async getDestinations() {
-    return await this.wharehouseRepository.find();
-  }
-
-  public getMatrix(origin: object, destinations: object): Promise<any> {
-    return new Promise((resolve, reject) => {
-      distance.matrix(origin, destinations, (err, distances) => {
-        if (!err) resolve(distances);
-      });
-    }).then(distances => {
+  public getMatrix(origin: object,destinations: object): Promise<any>{
+    return new Promise((resolve,reject) =>{
+      distance.matrix(origin, destinations,(err, distances) => {
+          if (!err)
+              resolve(distances)
+      })
+    })
+    .then(distances => {
       return distances;
-    });
+    })
   }
 }

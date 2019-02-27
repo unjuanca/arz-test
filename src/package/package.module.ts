@@ -13,6 +13,7 @@ import { UserModule } from '../user/user.module';
 import { WharehouseModule } from '../wharehouse/wharehouse.module';
 import { TruckModule } from '../truck/truck.module';
 import { AlertModule } from '../main-office-alert/alert.module';
+import { PackagesCountModule } from '../packages-count/packages-count.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AlertModule } from '../main-office-alert/alert.module';
     WharehouseModule,
     TruckModule,
     AlertModule,
+    PackagesCountModule,
   ],
   providers: [PackageService],
   controllers: [PackageController],
